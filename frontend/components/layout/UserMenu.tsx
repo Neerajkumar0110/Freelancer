@@ -14,26 +14,36 @@ import {
   AnimatePresence,
   useReducedMotion,
 } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
-
-/**
- * Assumptions:
- * - user.role: "client" | "freelancer"
- * - user.avatarUrl?: string
- * - AuthContext exposes: logout(), setRole?(role)
- *   (If setRole does not exist, persistence still works via localStorage)
- */
 
 export default function UserMenu() {
-  const { user, logout } = useAuth();
+  const [user, setUser] = useState({
+    name: "Alex Johnson",
+    email: "alex@careerlab.com",
+    role: "client",
+    avatarUrl: null, 
+  });
+
   const [open, setOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const notifications = 2; // TODO: backend
+  const notifications = 2; 
+  
   const ref = useRef<HTMLDivElement>(null);
-  const menuItemsRef = useRef<HTMLButtonElement[]>([]);
+  const menuItemsRef = useRef<(HTMLElement | null)[]>([]);
   const reduceMotion = useReducedMotion();
 
-  /* ---------------- Close on outside click ---------------- */
+  const logout = () => {
+    alert("Logged out successfully (Static Demo)");
+    setShowLogoutConfirm(false);
+  };
+
+  const switchRole = () => {
+    setUser((prev) => ({
+      ...prev,
+      role: prev.role === "client" ? "freelancer" : "client",
+    }));
+    setOpen(false); 
+  };
+
   useEffect(() => {
     const close = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -44,12 +54,11 @@ export default function UserMenu() {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  /* ---------------- Keyboard handling ---------------- */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!open) return;
 
-      const items = menuItemsRef.current.filter(Boolean);
+      const items = menuItemsRef.current.filter(Boolean) as HTMLElement[];
       const index = items.findIndex((el) => el === document.activeElement);
 
       if (e.key === "Escape") {
@@ -73,20 +82,6 @@ export default function UserMenu() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  if (!user) return null;
-
-  /* ---------------- Role switching (persistent) ---------------- */
-  const switchRole = () => {
-    const nextRole = user.role === "client" ? "freelancer" : "client";
-
-    // Persist locally (backend sync later)
-    localStorage.setItem("userRole", nextRole);
-
-    // Reload app to rehydrate role cleanly
-    window.location.reload();
-  };
-
-  /* ---------------- Avatar logic ---------------- */
   const avatar =
     user.avatarUrl ? (
       <img
@@ -100,7 +95,6 @@ export default function UserMenu() {
 
   return (
     <div className="relative flex items-center gap-3" ref={ref}>
-      {/* ===== Notifications ===== */}
       <button
         aria-label="Notifications"
         className="relative text-gray-400 hover:text-white
@@ -114,69 +108,64 @@ export default function UserMenu() {
         )}
       </button>
 
-      {/* ===== Avatar ===== */}
       <button
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
         className="w-9 h-9 rounded-full bg-indigo-600 text-white
                    flex items-center justify-center font-semibold
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500/40 overflow-hidden"
       >
         {avatar}
       </button>
 
-      {/* ===== Dropdown ===== */}
       <AnimatePresence>
         {open && (
           <motion.div
             role="menu"
-            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-            animate={reduceMotion ? false : { opacity: 1, y: 0 }}
-            exit={reduceMotion ? false : { opacity: 0, y: 8 }}
+            initial={reduceMotion ? undefined : { opacity: 0, y: 8 }}
+            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 8 }}
             className="absolute right-0 top-12 w-60 rounded-xl
                        bg-[#0F1424] border border-white/10
                        shadow-xl overflow-hidden z-[60]"
           >
-            {/* User info */}
             <div className="px-4 py-3 border-b border-white/10">
               <p className="text-sm text-white truncate">
                 {user.email}
               </p>
               <p className="text-xs text-gray-400 capitalize">
-                {user.role}
+                {user.role} Account
               </p>
             </div>
 
-            {/* Dashboard */}
             <Link
               href={
                 user.role === "client"
                   ? "/dashboard/client"
                   : "/dashboard/freelancer"
               }
-              ref={(el) => el && (menuItemsRef.current[0] = el)}
+              // @ts-ignore
+              ref={(el) => (menuItemsRef.current[0] = el)}
               className="flex items-center gap-2 px-4 py-2 text-sm
-                         text-gray-300 hover:bg-white/5 transition"
+                         text-gray-300 hover:bg-white/5 transition w-full"
             >
               <Settings size={14} />
               Dashboard
             </Link>
 
-            {/* Switch role */}
             <button
-              ref={(el) => el && (menuItemsRef.current[1] = el)}
+              ref={(el) => { menuItemsRef.current[1] = el; }}
               onClick={switchRole}
               className="flex items-center gap-2 w-full px-4 py-2 text-sm
                          text-gray-300 hover:bg-white/5 transition"
             >
               <Repeat size={14} />
-              Switch role
+              Switch to {user.role === "client" ? "Freelancer" : "Client"}
             </button>
 
-            {/* Logout */}
             <button
-              ref={(el) => el && (menuItemsRef.current[2] = el)}
+              ref={(el) => { menuItemsRef.current[2] = el; }}
               onClick={() => setShowLogoutConfirm(true)}
               className="flex items-center gap-2 w-full px-4 py-2 text-sm
                          text-red-400 hover:bg-red-500/10 transition"
@@ -188,7 +177,6 @@ export default function UserMenu() {
         )}
       </AnimatePresence>
 
-      {/* ===== Logout Confirmation ===== */}
       <AnimatePresence>
         {showLogoutConfirm && (
           <motion.div
