@@ -9,33 +9,50 @@ export default function SignupForm() {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("client");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("freelancer");
-
-  const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e: React.FormEvent) => {
+  /* =======================
+     PASSWORD RULES
+  ======================= */
+  const rules = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
+  const isStrongPassword = Object.values(rules).every(Boolean);
+
+  /* =======================
+     SUBMIT
+  ======================= */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
-    setLoading(true);
 
+    if (!isStrongPassword) {
+      return setError("Password does not meet strength requirements");
+    }
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match");
+    }
+
+    setLoading(true);
     try {
-      const res = await api.post("/auth/signup", {
+      await api.post("/auth/signup", {
         full_name: fullName,
         email,
         password,
         role,
       });
 
-      setSuccess(res.data.message || "Signup successful 🎉");
-
-      // Redirect after short delay
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
+      router.push("/login");
     } catch (err: any) {
       setError(err.response?.data?.message || "Signup failed");
     } finally {
@@ -45,7 +62,7 @@ export default function SignupForm() {
 
   return (
     <form
-      onSubmit={handleSignup}
+      onSubmit={handleSubmit}
       className="bg-[#0b1220] border border-gray-800 rounded-xl p-6 space-y-4"
     >
       <h1 className="text-2xl font-semibold text-white">Create Account</h1>
@@ -56,15 +73,9 @@ export default function SignupForm() {
         </div>
       )}
 
-      {success && (
-        <div className="bg-green-500/10 text-green-400 text-sm p-2 rounded">
-          {success}
-        </div>
-      )}
-
       <input
         type="text"
-        placeholder="Full Name"
+        placeholder="Full name"
         className="w-full bg-black border border-gray-700 rounded px-4 py-2 text-white"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
@@ -80,6 +91,34 @@ export default function SignupForm() {
         required
       />
 
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        className="w-full bg-black border border-gray-700 rounded px-4 py-2 text-white"
+      >
+        <option value="client">Client</option>
+        <option value="freelancer">Freelancer</option>
+      </select>
+
+      {/* PASSWORD RULES */}
+      <div className="text-sm space-y-1">
+        <p className={rules.length ? "text-green-400" : "text-gray-400"}>
+          • At least 8 characters
+        </p>
+        <p className={rules.uppercase ? "text-green-400" : "text-gray-400"}>
+          • One uppercase letter
+        </p>
+        <p className={rules.lowercase ? "text-green-400" : "text-gray-400"}>
+          • One lowercase letter
+        </p>
+        <p className={rules.number ? "text-green-400" : "text-gray-400"}>
+          • One number
+        </p>
+        <p className={rules.special ? "text-green-400" : "text-gray-400"}>
+          • One special character
+        </p>
+      </div>
+
       <input
         type="password"
         placeholder="Password"
@@ -89,19 +128,19 @@ export default function SignupForm() {
         required
       />
 
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
+      <input
+        type="password"
+        placeholder="Confirm password"
         className="w-full bg-black border border-gray-700 rounded px-4 py-2 text-white"
-      >
-        <option value="freelancer">Freelancer</option>
-        <option value="client">Client</option>
-      </select>
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        required
+      />
 
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 transition rounded py-2 text-white font-medium"
+        disabled={loading || !isStrongPassword}
+        className="w-full bg-indigo-600 hover:bg-indigo-700 transition rounded py-2 text-white font-medium disabled:opacity-50"
       >
         {loading ? "Creating account..." : "Sign Up"}
       </button>

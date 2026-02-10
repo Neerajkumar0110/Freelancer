@@ -1,7 +1,105 @@
 @import "tailwindcss";
 
+/* ================================
+   Base styles
+================================ */
+
 html,
 body {
-  background: #020617;
-  color: #e5e7eb;
+  background-color: #020617; /* Deep navy */
+  color: #e5e7eb; /* Tailwind gray-200 */
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Smooth text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove tap highlight on mobile */
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ================================
+   Gradient animation
+================================ */
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientMove 20s ease infinite;
+}
+
+/* ================================
+   Spin animations
+================================ */
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 60s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 90s linear infinite;
+}
+
+/* ================================
+   Reduced motion support
+================================ */
+
+/*
+  Respect users who prefer reduced motion:
+  - Disable animations & transitions
+  - Keep UI fully functional
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-gradient,
+  .animate-spin-slow,
+  .animate-spin-reverse {
+    animation: none !important;
+  }
 }

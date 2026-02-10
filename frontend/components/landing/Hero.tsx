@@ -2,74 +2,145 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import FloatingProfiles from "@/components/landing/FloatingProfiles";
+
+/* ================= ANIMATION VARIANTS ================= */
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay },
+  }),
+};
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-black to-black" />
+    <section className="relative overflow-hidden bg-[#0B0F19] pt-16 pb-20">
+      {/* Background layers */}
+      <AnimatedBackground />
+      <FloatingProfiles />
 
-      {/* Glow */}
-      <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-indigo-600/20 blur-[120px]" />
-
-      <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-40 text-center">
-        {/* Badge */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+        {/* ================= BADGE ================= */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-white/10 bg-white/5 backdrop-blur text-sm text-gray-300"
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={0}
+          className="inline-flex items-center gap-3 px-4 py-2 mb-12
+                     rounded-full border border-white/15
+                     text-sm text-gray-300"
         >
-          <span className="text-indigo-400">⚡</span>
-          The future of freelancing is autonomous
+          {/* Avatars */}
+          <div className="flex -space-x-2">
+            {[
+              "/profiles/dev1.jpg",
+              "/profiles/designer1.jpg",
+              "/profiles/ai1.jpg",
+            ].map((src, i) => (
+              <Image
+                key={i}
+                src={src}
+                alt="Freelancer profile"
+                width={24}
+                height={24}
+                className="rounded-full border border-[#0B0F19] object-cover"
+              />
+            ))}
+          </div>
+
+          <span className="h-4 w-px bg-white/20" />
+
+          <span className="text-gray-200 tracking-wide whitespace-nowrap">
+            The future of freelancing is autonomous
+          </span>
+
+          <span
+            aria-hidden
+            className="inline-flex h-2.5 w-2.5 rounded-full bg-indigo-500
+                       animate-[pulse_3s_ease-in-out_infinite]"
+          />
         </motion.div>
 
-        {/* Heading */}
+        {/* ================= HEADING ================= */}
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-5xl md:text-7xl font-extrabold leading-tight text-white"
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={0.1}
+          className="text-4xl md:text-6xl xl:text-7xl font-bold tracking-tight text-white"
         >
-          Build Your <br />
-          <span className="bg-gradient-to-r from-indigo-400 to-blue-500 bg-clip-text text-transparent">
-            Freelance Empire
+          Hire & Work with
+          <br />
+          <span className="bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+            Top Freelancers
           </span>
         </motion.h1>
 
-        {/* Subtitle */}
+        {/* ================= SUBTEXT ================= */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 max-w-2xl mx-auto text-lg text-gray-400"
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={0.2}
+          className="mt-6 max-w-2xl mx-auto text-gray-400 text-base md:text-lg"
         >
-          Hire elite freelancers or deploy your own AI-powered workforce.
-          Scale faster without scaling headcount.
+          Find verified talent, manage projects seamlessly, and get work done
+          faster — without hiring friction.
         </motion.p>
 
-        {/* CTA */}
+        {/* ================= CTAs ================= */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-12 flex justify-center gap-4"
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={0.3}
+          className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Link
-            href="/signup"
-            className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 font-semibold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition"
+            href="/hire"
+            className="bg-indigo-600 hover:bg-indigo-700 px-6 py-3
+                       rounded-xl text-white font-medium transition"
           >
-            Get Started
-            <span className="group-hover:translate-x-1 transition">→</span>
+            Hire Freelancers →
           </Link>
-
           <Link
-            href="/login"
-            className="rounded-xl border border-white/10 bg-white/5 px-8 py-4 text-gray-300 backdrop-blur hover:bg-white/10 transition"
+            href="/freelancers"
+            className="px-6 py-3 rounded-xl border border-white/10
+                       text-gray-300 hover:bg-white/5 transition"
           >
-            Watch Demo
+            Find Work
           </Link>
+        </motion.div>
+
+        {/* ================= STATS ================= */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          custom={0.45}
+          className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center"
+        >
+          <Stat value="10K+" label="Verified Freelancers" />
+          <Stat value="95%" label="Client Satisfaction" />
+          <Stat value="2× Faster" label="Hiring Speed" />
         </motion.div>
       </div>
     </section>
+  );
+}
+
+/* ================= STAT ================= */
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="text-3xl font-bold text-white">{value}</p>
+      <p className="text-sm text-gray-400 mt-1">{label}</p>
+    </div>
   );
 }
