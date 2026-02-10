@@ -9,7 +9,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 
-/* ================= MOCK DATA (API-READY) ================= */
+/* ================= MOCK DATA ================= */
 
 const stats = [
   {
@@ -73,7 +73,6 @@ const recommendedJobs = [
 export default function FreelancerDashboard() {
   return (
     <RoleProtectedRoute allowedRoles={["freelancer"]}>
-      {/* ===== PAGE INTRO ===== */}
       <div className="mb-6">
         <p className="text-gray-400">
           Browse jobs, submit proposals, and track your earnings.
@@ -89,7 +88,7 @@ export default function FreelancerDashboard() {
 
       {/* ===== MAIN GRID ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-        {/* ===== JOB FEED ===== */}
+        {/* JOB FEED */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-lg font-semibold">Recommended Jobs</h2>
 
@@ -134,7 +133,7 @@ export default function FreelancerDashboard() {
           ))}
         </div>
 
-        {/* ===== RIGHT PANEL ===== */}
+        {/* RIGHT PANEL */}
         <div className="space-y-6">
           <Panel title="Profile Completion">
             <Progress value={75} />
@@ -176,16 +175,8 @@ function StatCard({
   sub: string;
 }) {
   return (
-    <div
-      className="p-5 rounded-2xl bg-[#0F1424]
-                 border border-white/10
-                 hover:border-indigo-500/40 transition
-                 flex gap-4"
-    >
-      <div
-        className="w-10 h-10 rounded-xl bg-indigo-500/10
-                   flex items-center justify-center"
-      >
+    <div className="p-5 rounded-2xl bg-[#0F1424] border border-white/10 flex gap-4">
+      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
         <Icon className="text-indigo-400" size={20} />
       </div>
 
@@ -217,7 +208,7 @@ function Progress({ value }: { value: number }) {
   return (
     <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
       <div
-        className="h-full bg-indigo-500 transition-all"
+        className="h-full bg-indigo-500"
         style={{ width: `${value}%` }}
       />
     </div>
