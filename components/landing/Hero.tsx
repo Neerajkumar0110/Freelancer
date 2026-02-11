@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   ShieldCheck,
   Zap,
@@ -19,7 +19,7 @@ const JOB_TAGS = ["Remote", "Smart Contracts", "FinTech", "GenAI", "Series A"];
 
 /* ================= ANIMATION VARIANTS ================= */
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -27,7 +27,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
@@ -59,7 +59,6 @@ export default function PremiumHero() {
   const currentPlaceholders =
     mode === "talent" ? talentPlaceholders : jobPlaceholders;
 
-  /* ===== FIXED INTERVAL (No dependency warning) ===== */
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) =>
@@ -68,11 +67,10 @@ export default function PremiumHero() {
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [mode]); // Only depend on mode
+  }, [mode]);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#020617] py-20">
-      {/* BACKGROUND */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
@@ -84,7 +82,6 @@ export default function PremiumHero() {
         animate="show"
         className="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center"
       >
-        {/* LIVE STATUS */}
         <motion.div variants={itemVariants} className="mb-8">
           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
@@ -94,7 +91,6 @@ export default function PremiumHero() {
           </div>
         </motion.div>
 
-        {/* HEADING */}
         <motion.div variants={itemVariants} className="text-center mb-10">
           <h1 className="text-5xl md:text-8xl font-black tracking-tight text-white leading-[1.1] mb-6">
             Scale your <br />
@@ -104,9 +100,7 @@ export default function PremiumHero() {
           </h1>
         </motion.div>
 
-        {/* SEARCH HUB */}
         <motion.div variants={itemVariants} className="w-full max-w-3xl mb-16">
-          {/* TOGGLE */}
           <div className="flex justify-center mb-6">
             <div className="inline-flex p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl">
               <button
@@ -141,7 +135,6 @@ export default function PremiumHero() {
             </div>
           </div>
 
-          {/* SEARCH BOX */}
           <div
             className={`relative flex items-center bg-[#0a0f1e] border transition-all duration-300 rounded-2xl p-1.5 ${
               isFocused
@@ -150,11 +143,7 @@ export default function PremiumHero() {
             }`}
           >
             <div className="pl-5 pr-3 text-gray-500">
-              {mode === "talent" ? (
-                <Search size={20} />
-              ) : (
-                <Briefcase size={20} />
-              )}
+              {mode === "talent" ? <Search size={20} /> : <Briefcase size={20} />}
             </div>
 
             <div className="relative flex-1">
@@ -167,7 +156,6 @@ export default function PremiumHero() {
                 className="w-full bg-transparent outline-none text-white font-medium py-4 text-lg"
               />
 
-              {/* FIXED PLACEHOLDER ANIMATION */}
               <AnimatePresence mode="wait">
                 {searchValue === "" && !isFocused && (
                   <motion.div
@@ -193,7 +181,6 @@ export default function PremiumHero() {
             </motion.button>
           </div>
 
-          {/* TAGS */}
           <div className="mt-6 flex flex-wrap justify-center items-center gap-2.5">
             <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest mr-2">
               {mode === "talent" ? "Popular Roles:" : "Top Categories:"}
@@ -211,7 +198,6 @@ export default function PremiumHero() {
           </div>
         </motion.div>
 
-        {/* STATS */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-4xl pt-12 border-t border-white/5">
           <StatEntry
             label="Pre-Vetted"
@@ -238,8 +224,6 @@ export default function PremiumHero() {
     </section>
   );
 }
-
-/* ================= STAT COMPONENT ================= */
 
 function StatEntry({
   label,
