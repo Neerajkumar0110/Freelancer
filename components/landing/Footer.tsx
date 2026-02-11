@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Linkedin, Github, Twitter, Send, Globe2, Command } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Linkedin, Github, Twitter, Send, Globe2,
+  Command, Sparkles, ArrowUpRight, CheckCircle2
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Footer() {
+export default function PremiumFooter() {
   const [email, setEmail] = useState("");
-  const [language, setLanguage] = useState("en-IN");
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -20,103 +22,116 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#020617] border-t border-white/5 pt-20">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="relative bg-[#020617] overflow-hidden border-t border-white/5">
+      {/* Background Decorative Element */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
 
-        {/* ===== TOP SECTION: BRAND & NEWSLETTER ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/5">
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
 
-          <div className="lg:col-span-5">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white group-hover:rotate-12 transition-transform">
-                <Command size={18} />
-              </div>
-              <span className="text-xl font-black text-white tracking-tighter">
-                FREELANCER<span className="text-indigo-500">.</span>
-              </span>
-            </Link>
-            <p className="mt-6 text-gray-400 text-base leading-relaxed max-w-sm font-medium">
-              The world's premium network for elite talent. We bridge the gap between visionary companies and global experts.
-            </p>
+        {/* ===== HERO SECTION: BRAND & NEWSLETTER ===== */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
 
-            {/* Social Buttons */}
-            <div className="flex items-center gap-3 mt-8">
+          <div className="lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500">
+                  <Command size={22} strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-black text-white tracking-tighter uppercase italic">
+                  Freelancer Lab<span className="text-indigo-500 not-italic">.</span>
+                </span>
+              </Link>
+              <p className="mt-8 text-slate-400 text-lg leading-relaxed max-w-sm">
+                Engineering the future of work by connecting the top <span className="text-white">1% of global talent</span> with world-class engineering teams.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4 mt-10">
               {[
-                { icon: Linkedin, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Github, href: "#" }
-              ].map((social, i) => (
+                { icon: Linkedin, label: "LinkedIn" },
+                { icon: Twitter, label: "X" },
+                { icon: Github, label: "GitHub" }
+              ].map((social) => (
                 <Link
-                  key={i}
-                  href={social.href}
-                  className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-600 hover:border-indigo-500 transition-all duration-300"
+                  key={social.label}
+                  href="#"
+                  className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
                 >
-                  <social.icon size={18} />
+                  <social.icon size={16} className="text-slate-400 group-hover:text-white" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">
+                    {social.label}
+                  </span>
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="lg:col-span-6 lg:col-start-7">
-            <div className="relative p-8 rounded-[32px] bg-white/[0.02] border border-white/5 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
+          {/* Newsletter Bento Box */}
+          <div className="lg:col-span-7">
+            <div className="relative group p-1 rounded-[32px] bg-gradient-to-br from-white/10 to-transparent">
+              <div className="relative bg-[#0b1120] rounded-[30px] p-8 md:p-10 overflow-hidden">
+                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Sparkles size={80} className="text-indigo-500" />
+                </div>
 
-              <h4 className="text-white font-bold text-lg mb-2">Join the inner circle</h4>
-              <p className="text-gray-500 text-sm mb-6 font-medium">Receive curated hiring insights and platform updates weekly.</p>
+                <h4 className="text-2xl md:text-3xl font-bold text-white mb-3">Stay ahead of the curve.</h4>
+                <p className="text-slate-500 mb-8 max-w-md font-medium">Join 50,000+ founders and engineers receiving our weekly brief on AI, hiring, and tech stack evolution.</p>
 
-              <form onSubmit={handleSubscribe} className="relative flex gap-2">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your work email"
-                  className="flex-1 bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubscribed}
-                  className={`px-6 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2
-                    ${isSubscribed ? "bg-emerald-500 text-white" : "bg-white text-black hover:bg-indigo-500 hover:text-white"}`}
-                >
-                  {isSubscribed ? "Success" : (
-                    <>
-                      Subscribe <Send size={14} />
-                    </>
-                  )}
-                </button>
-              </form>
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter work email"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                  />
+                  <button
+                    type="submit"
+                    className="relative overflow-hidden px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all bg-white text-black hover:bg-indigo-500 hover:text-white active:scale-95"
+                  >
+                    <AnimatePresence mode="wait">
+                      {isSubscribed ? (
+                        <motion.div
+                          key="success"
+                          initial={{ y: 20 }} animate={{ y: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle2 size={16} /> Subscribed
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="submit"
+                          initial={{ y: -20 }} animate={{ y: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          Join Brief <Send size={14} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ===== MIDDLE SECTION: LINKS ===== */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 py-16">
+        {/* ===== LINK GRID ===== */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 py-20 border-t border-white/5">
           {[
-            {
-              title: "Product",
-              links: ["Pricing", "Talent Search", "Enterprise", "Reviews"]
-            },
-            {
-              title: "Resources",
-              links: ["Blog", "Help Center", "Case Studies", "Status"]
-            },
-            {
-              title: "Company",
-              links: ["About Us", "Careers", "Press", "Contact"]
-            },
-            {
-              title: "Legal",
-              links: ["Terms", "Privacy", "Security", "Cookies"]
-            }
+            { title: "Platform", links: ["Talent Cloud", "Vetting Process", "Enterprise", "Pricing"] },
+            { title: "Network", links: ["Community", "Referral Program", "Events", "Leaderboard"] },
+            { title: "Company", links: ["Our Mission", "Careers", "Newsroom", "Contact"] },
+            { title: "Support", links: ["Documentation", "Hiring Guide", "Help Center", "Legal"] }
           ].map((col) => (
             <div key={col.title}>
-              <h5 className="text-white font-black text-[10px] uppercase tracking-[0.3em] mb-6">{col.title}</h5>
+              <h5 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-8 opacity-50">{col.title}</h5>
               <ul className="space-y-4">
                 {col.links.map((link) => (
                   <li key={link}>
-                    <Link href="#" className="text-gray-500 hover:text-indigo-400 text-sm font-medium transition-colors">
+                    <Link href="#" className="group flex items-center text-slate-500 hover:text-white text-[13px] font-bold transition-all">
                       {link}
+                      <ArrowUpRight size={12} className="ml-1 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
                     </Link>
                   </li>
                 ))}
@@ -125,34 +140,29 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* ===== BOTTOM SECTION: STATUS & SETTINGS ===== */}
-        <div className="border-t border-white/5 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">
-              © {new Date().getFullYear()} Freelancer Global Inc.
-            </p>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Systems Operational</span>
+        {/* ===== FOOTER BOTTOM ===== */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <span className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em]">
+              © {new Date().getFullYear()} Reserved
+            </span>
+
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-[pulse_2s_infinite]" />
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Career Lab Company</span>
+              </div>
+              <div className="h-4 w-[1px] bg-white/5 hidden md:block" />
+              <Link href="#" className="text-slate-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors">Privacy Policy</Link>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              <Globe2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-8 py-2 text-xs font-bold text-gray-400 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer hover:bg-white/10 transition-all"
-              >
-                <option value="en-IN">English (IN)</option>
-                <option value="en-US">English (US)</option>
-                <option value="fr-FR">Français</option>
-                <option value="de-DE">Deutsch</option>
-              </select>
-            </div>
+          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 group cursor-pointer hover:bg-white/10 transition-all">
+            <Globe2 size={14} className="text-slate-500 group-hover:text-indigo-400 transition-colors" />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">English (Global)</span>
           </div>
         </div>
+
       </div>
     </footer>
   );
