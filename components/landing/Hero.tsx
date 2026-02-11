@@ -1,14 +1,17 @@
 "use client";
 
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ShieldCheck, Zap, Globe, ArrowRight } from "lucide-react";
 import { useRef } from "react";
 
-/* ================= ANIMATION VARIANTS ================= */
+/* ================= SAFE ANIMATION VARIANTS ================= */
 
-const containerVariants: Variants = {
+/* We avoid explicit Variants typing to prevent
+   strict Transition type conflicts in Next 16 */
+
+const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -19,14 +22,18 @@ const containerVariants: Variants = {
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 30,
+    filter: "blur(10px)",
+  },
   show: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 20,
     },
