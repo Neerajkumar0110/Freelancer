@@ -7,8 +7,6 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { useRouter } from "next/navigation";
-import api from "@/lib/api";
 
 /* =======================
    TYPES
@@ -25,7 +23,7 @@ type AuthContextType = {
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (token: string, user: User, redirectTo?: string) => void;
+  login: () => void;
   logout: () => void;
 };
 
@@ -38,96 +36,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
    PROVIDER
 ======================= */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const router = useRouter();
-
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = !!user && !!token;
+  const isAuthenticated = true; // Always authenticated in frontend mode
 
   /* =======================
-     LOAD FROM STORAGE
+     DEMO AUTO LOGIN
   ======================= */
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
+    const demoUser: User = {
+      id: 1,
+      email: "demo@freelancerlab.com",
+      role: "freelancer", // role doesn't matter now
+      full_name: "Altaf Raja",
+    };
 
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (err) {
-      console.error("Auth storage error:", err);
-      localStorage.clear();
-    } finally {
-      setLoading(false);
-    }
+    setUser(demoUser);
+    setToken("demo-token");
+    setLoading(false);
   }, []);
 
-  /* =======================
-     ATTACH TOKEN TO API
-  ======================= */
-  useEffect(() => {
-    if (token) {
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-      delete api.defaults.headers.common["Authorization"];
-    }
-  }, [token]);
-
-  /* =======================
-     LOGIN
-  ======================= */
-  const login = (
-    authToken: string,
-    userData: User,
-    redirectTo: string = "/dashboard"
-  ) => {
-    localStorage.setItem("token", authToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-
-    setToken(authToken);
-    setUser({
-      ...userData,
-      role: userData.role.toLowerCase(),
-    });
-
-    router.push(redirectTo);
-  };
-
-  /* =======================
-     LOGOUT
-  ======================= */
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    setToken(null);
-    setUser(null);
-
-    router.replace("/login");
-  };
-
-  /* =======================
-     AUTO LOGOUT ON 401
-  ======================= */
-  useEffect(() => {
-    const interceptor = api.interceptors.response.use(
-      (res) => res,
-      (error) => {
-        if (error.response?.status === 401 && token) {
-          logout();
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    return () => {
-      api.interceptors.response.eject(interceptor);
-    };
-  }, [token]);
+  const login = () => {};
+  const logout = () => {};
 
   return (
     <AuthContext.Provider

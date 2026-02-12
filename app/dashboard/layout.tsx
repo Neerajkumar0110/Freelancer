@@ -1,44 +1,61 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "@/components/dashboard/Sidebar";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { useAuth } from "@/context/AuthContext";
+import { ClientSidebar } from "@/components/dashboard/ClientSidebar";
+import { FreelancerSidebar } from "@/components/dashboard/FreelancerSidebar";
+import { ClientHeader } from "@/components/dashboard/ClientHeader";
+import { FreelancerHeader } from "@/components/dashboard/FreelancerHeader";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#020617]">
+        <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const isClient = user?.role === "client";
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white flex">
-      {/* ===== DESKTOP SIDEBAR ===== */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+    <div className="flex h-screen bg-[#020617] overflow-hidden">
 
-      {/* ===== MOBILE SIDEBAR (DRAWER) ===== */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Overlay */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setSidebarOpen(false)}
-          />
-
-          {/* Drawer */}
-          <div className="relative w-64 h-full bg-[#0b1220] border-r border-gray-800">
-            <Sidebar onNavigate={() => setSidebarOpen(false)} />
-          </div>
-        </div>
+      {/* SIDEBAR (Desktop + Mobile Controlled) */}
+      {isClient ? (
+        <ClientSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      ) : (
+        <FreelancerSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
       )}
 
-      {/* ===== MAIN CONTENT ===== */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader onMobileMenu={() => setSidebarOpen(true)} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+        {/* HEADER */}
+        {isClient ? (
+          <ClientHeader
+            onMenuClick={() => setIsSidebarOpen(true)}
+          />
+        ) : (
+          <FreelancerHeader
+            onMenuClick={() => setIsSidebarOpen(true)}
+          />
+        )}
+
+        {/* MAIN */}
+        <main className="flex-1 overflow-y-auto bg-[#0B0F19]">
           {children}
         </main>
       </div>

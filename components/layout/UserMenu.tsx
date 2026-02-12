@@ -1,227 +1,133 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Bell,
-  LogOut,
-  Settings,
-  Repeat,
   User,
+  Settings,
+  CreditCard,
+  LogOut,
+  ShieldCheck,
+  ExternalLink
 } from "lucide-react";
-import {
-  motion,
-  AnimatePresence,
-  useReducedMotion,
-} from "framer-motion";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function UserMenu() {
-  const [user, setUser] = useState({
-    name: "Alex Johnson",
-    email: "alex@careerlab.com",
-    role: "client",
-    avatarUrl: null, 
-  });
+  const [isOpen, setIsOpen] = useState(false);
 
-  const [open, setOpen] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const notifications = 2; 
-  
-  const ref = useRef<HTMLDivElement>(null);
-  const menuItemsRef = useRef<(HTMLElement | null)[]>([]);
-  const reduceMotion = useReducedMotion();
-
-  const logout = () => {
-    alert("Logged out successfully (Static Demo)");
-    setShowLogoutConfirm(false);
+  // Mock user - replace with your useAuth() data
+  const user = {
+    name: "Alex Rivera",
+    email: "alex@console.ai",
+    plan: "Pro Member"
   };
-
-  const switchRole = () => {
-    setUser((prev) => ({
-      ...prev,
-      role: prev.role === "client" ? "freelancer" : "client",
-    }));
-    setOpen(false); 
-  };
-
-  useEffect(() => {
-    const close = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!open) return;
-
-      const items = menuItemsRef.current.filter(Boolean) as HTMLElement[];
-      const index = items.findIndex((el) => el === document.activeElement);
-
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        const next = items[index + 1] || items[0];
-        next?.focus();
-      }
-
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        const prev = items[index - 1] || items[items.length - 1];
-        prev?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
-
-  const avatar =
-    user.avatarUrl ? (
-      <img
-        src={user.avatarUrl}
-        alt="User avatar"
-        className="w-full h-full object-cover rounded-full"
-      />
-    ) : (
-      <User size={18} />
-    );
 
   return (
-    <div className="relative flex items-center gap-3" ref={ref}>
+    <div className="relative">
+      {/* Trigger Avatar */}
       <button
-        aria-label="Notifications"
-        className="relative text-gray-400 hover:text-white
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500/40
-                   rounded-full transition"
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative group flex items-center justify-center h-9 w-9 rounded-full overflow-hidden border-2 border-white/10 transition-all hover:border-indigo-500/50 active:scale-95"
       >
-        <Bell size={20} />
-        {notifications > 0 && (
-          <span className="absolute -top-1 -right-1 w-2 h-2
-                           bg-indigo-500 rounded-full" />
-        )}
-      </button>
-
-      <button
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="w-9 h-9 rounded-full bg-indigo-600 text-white
-                   flex items-center justify-center font-semibold
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500/40 overflow-hidden"
-      >
-        {avatar}
+        <img
+          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+          alt="Avatar"
+          className="object-cover"
+        />
       </button>
 
       <AnimatePresence>
-        {open && (
-          <motion.div
-            role="menu"
-            initial={reduceMotion ? undefined : { opacity: 0, y: 8 }}
-            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-            exit={reduceMotion ? undefined : { opacity: 0, y: 8 }}
-            className="absolute right-0 top-12 w-60 rounded-xl
-                       bg-[#0F1424] border border-white/10
-                       shadow-xl overflow-hidden z-[60]"
-          >
-            <div className="px-4 py-3 border-b border-white/10">
-              <p className="text-sm text-white truncate">
-                {user.email}
-              </p>
-              <p className="text-xs text-gray-400 capitalize">
-                {user.role} Account
-              </p>
-            </div>
+        {isOpen && (
+          <>
+            {/* Backdrop for closing */}
+            <div
+              className="fixed inset-0 z-10"
+              onClick={() => setIsOpen(false)}
+            />
 
-            <Link
-              href={
-                user.role === "client"
-                  ? "/dashboard/client"
-                  : "/dashboard/freelancer"
-              }
-              // @ts-ignore
-              ref={(el) => (menuItemsRef.current[0] = el)}
-              className="flex items-center gap-2 px-4 py-2 text-sm
-                         text-gray-300 hover:bg-white/5 transition w-full"
-            >
-              <Settings size={14} />
-              Dashboard
-            </Link>
-
-            <button
-              ref={(el) => { menuItemsRef.current[1] = el; }}
-              onClick={switchRole}
-              className="flex items-center gap-2 w-full px-4 py-2 text-sm
-                         text-gray-300 hover:bg-white/5 transition"
-            >
-              <Repeat size={14} />
-              Switch to {user.role === "client" ? "Freelancer" : "Client"}
-            </button>
-
-            <button
-              ref={(el) => { menuItemsRef.current[2] = el; }}
-              onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-2 w-full px-4 py-2 text-sm
-                         text-red-400 hover:bg-red-500/10 transition"
-            >
-              <LogOut size={14} />
-              Logout
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showLogoutConfirm && (
-          <motion.div
-            className="fixed inset-0 z-[70] bg-black/70
-                       flex items-center justify-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
             <motion.div
-              initial={{ scale: 0.95, y: 10 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 10 }}
-              className="bg-[#0B0F19] rounded-xl p-6 w-full max-w-sm
-                         border border-white/10"
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute right-0 mt-3 w-64 z-20 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_20px_rgba(99,102,241,0.1)]"
             >
-              <h3 className="text-white font-semibold text-lg">
-                Log out?
-              </h3>
-              <p className="mt-2 text-sm text-gray-400">
-                You will be signed out of your account.
-              </p>
+              {/* Profile Summary */}
+              <div className="p-4 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold">
+                    {user.name.charAt(0)}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-sm font-bold text-white truncate">{user.name}</span>
+                    <span className="text-[10px] font-medium text-gray-500 truncate uppercase tracking-tight">
+                      {user.plan}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  onClick={() => setShowLogoutConfirm(false)}
-                  className="px-4 py-2 rounded-lg text-sm
-                             border border-white/15 text-white
-                             hover:bg-white/5 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={logout}
-                  className="px-4 py-2 rounded-lg text-sm
-                             bg-red-600 hover:bg-red-700
-                             text-white transition"
-                >
-                  Logout
+              <div className="h-[1px] w-full bg-white/5" />
+
+              {/* Menu Items */}
+              <div className="p-2">
+                <MenuLink icon={<User size={14} />} label="My Profile" href="/profile" />
+                <MenuLink icon={<CreditCard size={14} />} label="Billing" href="/billing" />
+                <MenuLink icon={<Settings size={14} />} label="Account Settings" href="/settings" />
+                <MenuLink
+                  icon={<ShieldCheck size={14} />}
+                  label="Security"
+                  href="/security"
+                  badge="New"
+                />
+              </div>
+
+              <div className="h-[1px] w-full bg-white/5" />
+
+              {/* Footer Actions */}
+              <div className="p-2">
+                <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-rose-400 transition-colors hover:bg-rose-500/10">
+                  <LogOut size={14} />
+                  Sign Out
                 </button>
               </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function MenuLink({
+  icon,
+  label,
+  href,
+  badge
+}: {
+  icon: React.ReactNode;
+  label: string;
+  href: string;
+  badge?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-all hover:bg-white/5 hover:text-white"
+    >
+      <div className="flex items-center gap-3">
+        <span className="text-gray-500 group-hover:text-indigo-400 transition-colors">
+          {icon}
+        </span>
+        {label}
+      </div>
+      {badge ? (
+        <span className="rounded-full bg-indigo-500/20 px-1.5 py-0.5 text-[8px] font-black uppercase text-indigo-400 ring-1 ring-inset ring-indigo-500/30">
+          {badge}
+        </span>
+      ) : (
+        <ExternalLink size={10} className="opacity-0 group-hover:opacity-40" />
+      )}
+    </Link>
   );
 }
