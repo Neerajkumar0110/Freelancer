@@ -1,11 +1,14 @@
 "use client";
 
+"use client";
+
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { ClientSidebar } from "@/components/dashboard/ClientSidebar";
-import { FreelancerSidebar } from "@/components/dashboard/FreelancerSidebar";
+import ClientSidebar from "@/components/dashboard/ClientSidebar";
+import FreelancerSidebar from "@/components/dashboard/FreelancerSidebar";
 import { ClientHeader } from "@/components/dashboard/ClientHeader";
 import { FreelancerHeader } from "@/components/dashboard/FreelancerHeader";
+
 
 export default function DashboardLayout({
   children,
