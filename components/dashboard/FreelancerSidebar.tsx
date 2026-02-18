@@ -15,7 +15,8 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export function FreelancerSidebar({ isOpen, onClose }: SidebarProps) {
+export default function FreelancerSidebar({ isOpen, onClose }: SidebarProps) {
+
   const pathname = usePathname();
   // Desktop starts expanded, mobile drawer will override this via useEffect
   const [isExpanded, setIsExpanded] = useState(true);

@@ -25,7 +25,8 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-export function ClientSidebar({ isOpen, onClose }: SidebarProps) {
+export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
+
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(true);
   const [mounted, setMounted] = useState(false);
