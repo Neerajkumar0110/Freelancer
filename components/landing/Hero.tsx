@@ -1,250 +1,177 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence, type Variants } from "framer-motion";
-import {
-  ShieldCheck,
-  Zap,
-  Globe,
-  Search,
-  Briefcase,
-  Users,
-  CheckCircle2,
-} from "lucide-react";
-import { useState, useEffect, type ReactNode } from "react";
+import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
-/* ================= DATA ================= */
-
-const TALENT_TAGS = ["React", "Solidity", "AI Architect", "UI/UX", "Python"];
-const JOB_TAGS = ["Remote", "Smart Contracts", "FinTech", "GenAI", "Series A"];
-
-/* ================= ANIMATION VARIANTS ================= */
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
-  },
-};
-
-/* ================= COMPONENT ================= */
-
-export default function PremiumHero() {
-  const [mode, setMode] = useState<"talent" | "jobs">("talent");
-  const [searchValue, setSearchValue] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-
-  const talentPlaceholders = [
-    "Search for 'Senior Blockchain Engineer'...",
-    "Search for 'Lead Product Designer'...",
-    "Search for 'AI Architect'...",
-  ];
-
-  const jobPlaceholders = [
-    "Search for 'React Developer Jobs'...",
-    "Search for 'Remote UX Design Gigs'...",
-    "Search for 'Solidity Architect Roles'...",
-  ];
-
-  const currentPlaceholders =
-    mode === "talent" ? talentPlaceholders : jobPlaceholders;
+const SpaceBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const featureWords = ["SQL", "Next.js", "AI Reports", "GitHub Sync", "360° Profile", "Node.js", "Autonomous"];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex((prev) =>
-        prev === currentPlaceholders.length - 1 ? 0 : prev + 1
-      );
-    }, 3500);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
 
-    return () => clearInterval(interval);
-  }, [mode]);
+    let animationFrameId: number;
+    let stars: { x: number; y: number; z: number; text?: string }[] = [];
+    const numStars = 300;
+    const speed = 1.2;
+
+    const setup = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.scale(dpr, dpr);
+
+      stars = [];
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * window.innerWidth - window.innerWidth / 2,
+          y: Math.random() * window.innerHeight - window.innerHeight / 2,
+          z: Math.random() * window.innerWidth,
+          text: i % 45 === 0 ? featureWords[Math.floor(Math.random() * featureWords.length)] : undefined
+        });
+      }
+    };
+
+    const draw = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const cx = width / 2;
+      const cy = height / 2;
+
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, width, height);
+
+      stars.forEach((star) => {
+        star.z -= speed;
+        if (star.z <= 0) {
+          star.z = width;
+          star.x = Math.random() * width - width / 2;
+          star.y = Math.random() * height - height / 2;
+        }
+
+        const x = (star.x / star.z) * cx + cx;
+        const y = (star.y / star.z) * cy + cy;
+        const size = (1 - star.z / width) * 2;
+        const opacity = Math.max(0, 1 - star.z / width);
+
+        if (x >= 0 && x < width && y >= 0 && y < height) {
+          if (star.text) {
+            const baseFontSize = 16;
+            const dynamicFontSize = Math.floor(size * baseFontSize);
+
+            ctx.font = `900 ${dynamicFontSize}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(star.text, x, y);
+
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1.0;
+          } else {
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.8})`;
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      });
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    setup();
+    draw();
+    window.addEventListener('resize', setup);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', setup);
+    };
+  }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#020617] py-20">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-indigo-500/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
-      </div>
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <canvas ref={canvasRef} className="absolute inset-0" />
+      <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-blue-600/10 blur-[150px] rounded-full" />
+    </div>
+  );
+};
+
+const PARTNERS = [
+  { name: "GitHub", logo: "https://www.vectorlogo.zone/logos/github/github-tile.svg", width: 32, height: 32 },
+  { name: "LinkedIn", logo: "https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg", width: 32, height: 32 },
+  { name: "Facebook", logo: "https://www.vectorlogo.zone/logos/facebook/facebook-official.svg", width: 32, height: 32 },
+  { name: "Tailwind", logo: "https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg", width: 32, height: 32 }
+];
+
+export default function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center justify-center pt-32 pb-20 px-4 overflow-hidden bg-[#020617]">
+      <SpaceBackground />
 
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 max-w-7xl mx-auto text-center mb-15 mt-8 md:mt-0"
       >
-        <motion.div variants={itemVariants} className="mb-8">
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">
-              Real-time Matching Active
+        <div className="inline-flex items-center gap-2 bg-white px-4 py-2.5 rounded-full text-blue-600 shadow-2xl shadow-blue-500/30 mb-5 border border-blue-100">
+          <Zap size={14} fill="currentColor" className="animate-pulse" />
+          <span className="tracking-widest uppercase md:text-[11px] text-[8px] font-black">AI-Autonomous Job Matching Engine</span>
+        </div>
+
+        <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter mb-5 md:leading-[1.2] leading-[1.1] uppercase italic">
+          Scale <span className="text-blue-500 italic">your,</span> <br />
+          Digital <span className="text-indigo-400">Ambition.</span>
+        </h1>
+
+        <p className="text-[16px] md:text-2xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed font-medium">
+          Connecting businesses in need to freelancers who deliver <span className="text-white font-bold underline decoration-blue-500/50">GitHub</span>, <span className="text-white font-bold underline decoration-indigo-500/50">LinkedIn</span>, and AI assessments.
+        </p>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-5 mb-40">
+          <button className="flex items-center justify-center gap-3 bg-blue-600 text-white px-10 py-5 rounded-[1.5rem] text-sm font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30 active:scale-95">
+            Find Work<ArrowRight size={18} />
+          </button>
+          <button className="flex items-center justify-center gap-3 bg-white/[0.03] border border-white/10 text-white px-10 py-5 rounded-[1.5rem] text-sm font-black uppercase tracking-widest hover:bg-white/10 backdrop-blur-md transition-all active:scale-95">
+            Hire with AI <ShieldCheck size={18} />
+          </button>
+        </div>
+
+        <div className="relative mb-14">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-white/10 opacity-30"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="px-8 text-xs font-black uppercase tracking-[0.4em] text-slate-500 italic">
+              Deep Integration Ecosystem
             </span>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div variants={itemVariants} className="text-center mb-10">
-          <h1 className="text-5xl md:text-8xl font-black tracking-tight text-white leading-[1.1] mb-6">
-            Scale your <br />
-            <span className="bg-gradient-to-r from-white via-indigo-200 to-indigo-500 bg-clip-text text-transparent">
-              Digital Ambition.
-            </span>
-          </h1>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="w-full max-w-3xl mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl">
-              <button
-                onClick={() => {
-                  setMode("talent");
-                  setSearchValue("");
-                  setPlaceholderIndex(0);
-                }}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  mode === "talent"
-                    ? "bg-white text-black shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Users size={14} /> Find Talent
-              </button>
-
-              <button
-                onClick={() => {
-                  setMode("jobs");
-                  setSearchValue("");
-                  setPlaceholderIndex(0);
-                }}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  mode === "jobs"
-                    ? "bg-white text-black shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Briefcase size={14} /> Find Work
-              </button>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center justify-items-center opacity-90">
+          {PARTNERS.map((partner) => (
+            <div key={partner.name} className="flex items-center gap-4 group cursor-pointer bg-white/[0.03] px-6 py-3 rounded-2xl border border-white/5 hover:border-blue-500/30 hover:bg-white/[0.05] transition-all">
+              <div className="relative h-7 w-7">
+                <Image src={partner.logo} alt={partner.name} fill sizes="28px" className="object-contain" />
+              </div>
+              <span className="text-sm font-black text-white tracking-widest uppercase italic">
+                {partner.name}
+              </span>
             </div>
-          </div>
-
-          <div
-            className={`relative flex items-center bg-[#0a0f1e] border transition-all duration-300 rounded-2xl p-1.5 ${
-              isFocused
-                ? "border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]"
-                : "border-white/10"
-            }`}
-          >
-            <div className="pl-5 pr-3 text-gray-500">
-              {mode === "talent" ? <Search size={20} /> : <Briefcase size={20} />}
-            </div>
-
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                className="w-full bg-transparent outline-none text-white font-medium py-4 text-lg"
-              />
-
-              <AnimatePresence mode="wait">
-                {searchValue === "" && !isFocused && (
-                  <motion.div
-                    key={`${mode}-${placeholderIndex}`}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute inset-0 flex items-center pointer-events-none text-gray-500 font-medium text-lg pl-0"
-                  >
-                    {currentPlaceholders[placeholderIndex]}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all"
-            >
-              {mode === "talent" ? "Search Talent" : "Search Jobs"}
-            </motion.button>
-          </div>
-
-          <div className="mt-6 flex flex-wrap justify-center items-center gap-2.5">
-            <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest mr-2">
-              {mode === "talent" ? "Popular Roles:" : "Top Categories:"}
-            </span>
-
-            {(mode === "talent" ? TALENT_TAGS : JOB_TAGS).map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setSearchValue(tag)}
-                className="px-4 py-1.5 rounded-lg border border-white/5 bg-white/[0.03] text-xs font-semibold text-gray-400 hover:text-white hover:border-white/20 transition-all"
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-4xl pt-12 border-t border-white/5">
-          <StatEntry
-            label="Pre-Vetted"
-            value="Top 1%"
-            icon={<CheckCircle2 size={14} className="text-emerald-400" />}
-          />
-          <StatEntry
-            label="Match Time"
-            value="24 Hours"
-            icon={<Zap size={14} className="text-yellow-400" />}
-          />
-          <StatEntry
-            label="Reach"
-            value="Global"
-            icon={<Globe size={14} className="text-blue-400" />}
-          />
-          <StatEntry
-            label="Infrastructure"
-            value="Enterprise"
-            icon={<ShieldCheck size={14} className="text-indigo-400" />}
-          />
+          ))}
         </div>
       </motion.div>
     </section>
-  );
-}
-
-function StatEntry({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon: ReactNode;
-}) {
-  return (
-    <div className="text-center md:text-left">
-      <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-        {icon}
-        <p className="text-2xl font-black text-white tracking-tight">
-          {value}
-        </p>
-      </div>
-      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-        {label}
-      </p>
-    </div>
   );
 }

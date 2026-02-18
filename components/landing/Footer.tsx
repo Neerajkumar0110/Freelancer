@@ -1,169 +1,190 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import {
-  Linkedin, Github, Twitter, Send, Globe2,
-  Command, Sparkles, ArrowUpRight, CheckCircle2
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ShieldCheck, Home, Search, User, Briefcase, Activity, Zap, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function PremiumFooter() {
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubscribed(true);
-    setTimeout(() => {
-      setIsSubscribed(false);
-      setEmail("");
-    }, 3000);
-  };
+const FOOTER_LINKS = {
+  Platform: [
+    { name: 'Community', href: '#test' },
+    { name: 'Referral Program', href: '#reports' },
+    { name: 'Events', href: '#employers' },
+    { name: 'Leaderboard', href: '#' },
+  ],
+  Company: [
+    { name: 'About CLC', href: '#' },
+    { name: 'Partner Program', href: '#' },
+    { name: 'Privacy Policy', href: '#' },
+    { name: 'Terms of Service', href: '#' },
+  ],
+  Resources: [
+    { name: 'Documentation', href: '#' },
+    { name: 'Career Prep', href: '#' },
+    { name: 'Hiring Insights', href: '#' },
+    { name: 'Support', href: '#' },
+  ],
+};
+
+const SOCIAL_ICONS = [
+  { name: 'Facebook', src: 'https://cdn-icons-png.flaticon.com/512/5968/5968764.png', color: 'bg-[#1877F2]/10' },
+  { name: 'X', src: 'https://cdn-icons-png.flaticon.com/512/5969/5969020.png', color: 'bg-white/10' },
+  { name: 'Instagram', src: 'https://cdn-icons-png.flaticon.com/512/3955/3955024.png', color: 'bg-[#E4405F]/10' },
+  { name: 'YouTube', src: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png', color: 'bg-[#FF0000]/10' },
+  { name: 'LinkedIn', src: 'https://cdn-icons-png.flaticon.com/512/145/145807.png', color: 'bg-[#0A66C2]/10' },
+];
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-[#020617] overflow-hidden border-t border-white/5">
-      {/* Background Decorative Element */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+    <>
+      <footer className="relative bg-[#020617] border-t border-white/5 pt-15 pb-15 md:pb-12 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-12 mb-20">
 
-      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+            <div className="col-span-2 lg:col-span-4">
 
-        {/* ===== HERO SECTION: BRAND & NEWSLETTER ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
-
-          <div className="lg:col-span-5 flex flex-col justify-between">
-            <div>
-              <Link href="/" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500">
-                  <Command size={22} strokeWidth={2.5} />
-                </div>
-                <span className="text-2xl font-black text-white tracking-tighter uppercase italic">
-                  Freelancer Lab<span className="text-indigo-500 not-italic">.</span>
-                </span>
-              </Link>
-              <p className="mt-8 text-slate-400 text-lg leading-relaxed max-w-sm">
-                Engineering the future of work by connecting the top <span className="text-white">1% of global talent</span> with world-class engineering teams.
+              <p className="text-slate-400 text-sm font-medium leading-relaxed mb-10 max-w-xs uppercase tracking-tight">
+                Autonomous Verification Node v.2.5 <br />
+                <span className="text-blue-500 font-black italic underline decoration-blue-500/30">Manee Pro 2.5 Native Sync</span>
               </p>
+
+              <div className="flex flex-wrap gap-4">
+                {SOCIAL_ICONS.map((social) => (
+                  <Link key={social.name} href="#" className={`w-12 h-12 ${social.color} rounded-2xl border border-white/5 flex items-center justify-center transition-transform hover:scale-110 active:scale-95`}>
+                    <div className="relative w-8 h-8">
+                      <Image
+                        src={social.src}
+                        alt={social.name}
+                        fill
+                        sizes="24px"
+                        className="object-contain"
+                      />
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-4 mt-10">
-              {[
-                { icon: Linkedin, label: "LinkedIn" },
-                { icon: Twitter, label: "X" },
-                { icon: Github, label: "GitHub" }
-              ].map((social) => (
-                <Link
-                  key={social.label}
-                  href="#"
-                  className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
-                >
-                  <social.icon size={16} className="text-slate-400 group-hover:text-white" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">
-                    {social.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
+            {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+              <div key={title} className="col-span-1 lg:col-span-2">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-8">{title}</h4>
+                <ul className="space-y-4">
+                  {links.map((link) => (
+                    <li key={link.name}>
+                      <Link href={link.href} className="text-xs font-black text-slate-400 hover:text-blue-400 uppercase tracking-widest transition-colors">
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
 
-          {/* Newsletter Bento Box */}
-          <div className="lg:col-span-7">
-            <div className="relative group p-1 rounded-[32px] bg-gradient-to-br from-white/10 to-transparent">
-              <div className="relative bg-[#0b1120] rounded-[30px] p-8 md:p-10 overflow-hidden">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Sparkles size={80} className="text-indigo-500" />
+            <div className="col-span-2 lg:col-span-2">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-8">System HUD</h4>
+              <div className="bg-black/40 rounded-[1.5rem] p-4 border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden group">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] pointer-events-none" />
+
+                <div className="flex items-center justify-between mb-6">
+                   <div className="flex items-center gap-3">
+                      <div className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </div>
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest italic">Core Active</span>
+                   </div>
+                   <Activity size={12} className="text-blue-500 animate-pulse" />
                 </div>
 
-                <h4 className="text-2xl md:text-3xl font-bold text-white mb-3">Stay ahead of the curve.</h4>
-                <p className="text-slate-500 mb-8 max-w-md font-medium">Join 50,000+ founders and engineers receiving our weekly brief on AI, hiring, and tech stack evolution.</p>
+                <div className="space-y-4">
+                  <div className="p-2 bg-white/5 rounded-xl border border-white/5">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Neural Load</span>
+                      <span className="text-[10px] font-black text-blue-400 italic tracking-tighter">88%</span>
+                    </div>
+                    <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: '88%' }}
+                        className="bg-blue-600 h-full shadow-[0_0_10px_#3b82f6]"
+                      />
+                    </div>
+                  </div>
 
-                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter work email"
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
-                  />
-                  <button
-                    type="submit"
-                    className="relative overflow-hidden px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all bg-white text-black hover:bg-indigo-500 hover:text-white active:scale-95"
-                  >
-                    <AnimatePresence mode="wait">
-                      {isSubscribed ? (
-                        <motion.div
-                          key="success"
-                          initial={{ y: 20 }} animate={{ y: 0 }}
-                          className="flex items-center gap-2"
-                        >
-                          <CheckCircle2 size={16} /> Subscribed
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="submit"
-                          initial={{ y: -20 }} animate={{ y: 0 }}
-                          className="flex items-center gap-2"
-                        >
-                          Join Brief <Send size={14} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                </form>
+                  <div className="flex items-center gap-2 px-2">
+                    <Terminal size={10} className="text-green-500" />
+                    <span className="text-[6px] font-mono text-slate-400 animate-pulse uppercase tracking-widest">LATENCY_SYNC: 14MS</span>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-center gap-2 border-t border-white/5">
+                    <Zap size={10} className="text-yellow-400 fill-yellow-400" />
+                    <span className="text-[9px] font-black text-white uppercase tracking-widest italic">Empire Node 04</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ===== LINK GRID ===== */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 py-20 border-t border-white/5">
-          {[
-            { title: "Platform", links: ["Talent Cloud", "Vetting Process", "Enterprise", "Pricing"] },
-            { title: "Network", links: ["Community", "Referral Program", "Events", "Leaderboard"] },
-            { title: "Company", links: ["Our Mission", "Careers", "Newsroom", "Contact"] },
-            { title: "Support", links: ["Documentation", "Hiring Guide", "Help Center", "Legal"] }
-          ].map((col) => (
-            <div key={col.title}>
-              <h5 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-8 opacity-50">{col.title}</h5>
-              <ul className="space-y-4">
-                {col.links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="group flex items-center text-slate-500 hover:text-white text-[13px] font-bold transition-all">
-                      {link}
-                      <ArrowUpRight size={12} className="ml-1 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* ===== FOOTER BOTTOM ===== */}
-        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <span className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em]">
-              © {new Date().getFullYear()} Reserved
-            </span>
-
+          <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-[pulse_2s_infinite]" />
-                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Career Lab Company</span>
+              <span className="italic">© 2015 - {currentYear} CLC HireX</span>
+              <div className="flex items-center gap-2 text-blue-500">
+                <ShieldCheck size={12} />
+                <span>Protocol: X-Secure</span>
               </div>
-              <div className="h-4 w-[1px] bg-white/5 hidden md:block" />
-              <Link href="#" className="text-slate-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors">Privacy Policy</Link>
+            </div>
+            <div>
+              AI Dev by <span className="text-white underline underline-offset-4 decoration-blue-500">Career Lab Consulting</span>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 group cursor-pointer hover:bg-white/10 transition-all">
-            <Globe2 size={14} className="text-slate-500 group-hover:text-indigo-400 transition-colors" />
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-colors">English (Global)</span>
-          </div>
         </div>
+      </footer>
 
-      </div>
-    </footer>
+      <nav className="md:hidden fixed bottom-6 left-6 right-6 z-[100] h-18 bg-[#020617]/90 backdrop-blur-2xl border border-white/10 shadow-2xl rounded-[2.5rem] flex items-center justify-around px-4">
+        {[
+          { Icon: Home, label: 'Home', href: '/' },
+          { Icon: Briefcase, label: 'Jobs', href: '#reports' },
+        ].map((item) => (
+          <Link key={item.label} href={item.href} className="flex flex-col items-center gap-1.5 text-slate-400 active:text-blue-500 group">
+            <item.Icon size={18} className="group-active:scale-125 transition-transform" />
+            <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
+          </Link>
+        ))}
+
+        <Link
+          href="https://wa.me/918368436412"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative -translate-y-8 w-16 h-16"
+        >
+          <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+          <div className="relative w-full h-full bg-[#020617] rounded-full p-0.5 border border-white/10">
+            <div className="w-full h-full bg-white rounded-full p-2 flex items-center justify-center">
+              <Image
+                src="https://cdn-icons-png.flaticon.com/512/3670/3670051.png"
+                alt="Support"
+                width={45}
+                height={45}
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </Link>
+
+        {[
+          { Icon: Search, label: 'Tests', href: '#test' },
+          { Icon: User, label: 'Profile', href: '#' },
+        ].map((item) => (
+          <Link key={item.label} href={item.href} className="flex flex-col items-center gap-1.5 text-slate-400 active:text-blue-500">
+            <item.Icon size={18} />
+            <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 }
