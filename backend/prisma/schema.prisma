@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model users {
+  id               Int       @id @default(autoincrement())
+  full_name        String    @db.VarChar(100)
+  email            String    @unique @db.VarChar(100)
+  password         String    @db.VarChar(255)
+  role             UserRole
+  is_verified      Boolean?  @default(false)
+  created_at       DateTime? @default(now())
+  updated_at       DateTime? @updatedAt
+  reset_otp        String?   @db.VarChar(255)
+  reset_otp_expiry DateTime?
+  otp_attempts     Int?      @default(0)
+  otp_verified     Boolean?  @default(false)
+  otp_last_sent_at DateTime?
+  otp_resend_count Int?      @default(0)
+  otp_resend_date  DateTime? @db.Date
+
+  @@map("users")
+}
+
+model security_logs {
+  id         Int       @id @default(autoincrement())
+  email      String?   @db.VarChar(255)
+  action     String?   @db.VarChar(100)
+  ip_address String?   @db.VarChar(50)
+  user_agent String?
+  created_at DateTime? @default(now())
+
+  @@map("security_logs")
+}
+
+enum UserRole {
+  client
+  freelancer
+}
