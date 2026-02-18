@@ -7,6 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 
 /* =======================
    TYPES
@@ -23,7 +24,7 @@ type AuthContextType = {
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: () => void;
+  login: (token: string, user: User, redirectTo?: string) => void;
   logout: () => void;
 };
 
@@ -36,30 +37,54 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
    PROVIDER
 ======================= */
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = true; // Always authenticated in frontend mode
+  const isAuthenticated = !!token;
 
   /* =======================
-     DEMO AUTO LOGIN
+     LOAD FROM LOCAL STORAGE
   ======================= */
   useEffect(() => {
-    const demoUser: User = {
-      id: 1,
-      email: "demo@freelancerlab.com",
-      role: "freelancer", // role doesn't matter now
-      full_name: "Altaf Raja",
-    };
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-    setUser(demoUser);
-    setToken("demo-token");
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+
     setLoading(false);
   }, []);
 
-  const login = () => {};
-  const logout = () => {};
+  /* =======================
+     LOGIN
+  ======================= */
+  const login = (token: string, user: User, redirectTo?: string) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    setToken(token);
+    setUser(user);
+
+    if (redirectTo) router.push(redirectTo);
+  };
+
+  /* =======================
+     LOGOUT
+  ======================= */
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    setToken(null);
+    setUser(null);
+
+    router.push("/login");
+  };
 
   return (
     <AuthContext.Provider
@@ -82,8 +107,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 ======================= */
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 }
